@@ -52,6 +52,6 @@ class YandexLLM(langchain.llms.base.LLM):
                     js = res.json()
                     if 'result' in js:
                         return js['result']['alternatives'][0]['text']
-                    raise Exception(f"Cannot process YaGPT request, result received: {js}")
+                    raise YException(f"Cannot process YaGPT request, result received: {js}")
         except RetryError:
             raise YException(f"Error calling YandexGPT after {self.retries} retries. Result returned:\n{js}")
