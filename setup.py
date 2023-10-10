@@ -5,10 +5,10 @@ import yandex_chain
 
 with open('README.md') as readme_file:
     readme = readme_file.read()
-    
+
 setuptools.setup(
     name='yandex-chain',
-    packages=setuptools.find_packages('yandex_chain',exclude=('tests',)),
+    packages=setuptools.find_namespace_packages('.',exclude=['tests','examples']),
     version=yandex_chain.__version__,
     install_requires=['requests','langchain','tenacity'],
     description='Yandex GPT Support for LangChain',
