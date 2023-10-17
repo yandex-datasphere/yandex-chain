@@ -12,6 +12,7 @@ class YandexLLM(langchain.llms.base.LLM):
     sleep_interval : float = 1.0
     retries = 3
     instruction_text : str = None
+    instruction_uri : str = None
     iam_token : str = None
     folder_id : str = None
     api_key : str = None
@@ -38,6 +39,7 @@ class YandexLLM(langchain.llms.base.LLM):
         req = {
           "model": "general",
           "instruction_text": self.instruction_text,
+          "instruction_uri" : self.instruction_uri,
           "request_text": prompt,
           "generation_options": {
             "max_tokens": self.max_tokens,
