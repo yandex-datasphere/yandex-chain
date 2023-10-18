@@ -16,6 +16,13 @@ class TestYandexEmbeddings(unittest.TestCase):
         res = YGPTE.embed_query('Hello, world')
         self.assertEqual(len(res), 256)
 
+    def test_create_embeddings_with_sleep_interval(self):
+        with open('tests/config.json','r',encoding='utf-8') as f:
+            js = json.load(f)
+        YGPTE = YandexEmbeddings(folder_id=js['folder_id'],api_key=js['api_key'],sleep_interval=0.5)
+        res = YGPTE.embed_query('Hello, world')
+        self.assertEqual(len(res), 256)
+
     def test_embed_documents(self):
         YGPTE = YandexEmbeddings(config="tests/config.json")
         res = YGPTE.embed_documents(['Hello', 'world'])

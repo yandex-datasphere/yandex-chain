@@ -8,7 +8,7 @@ with open('README.md') as readme_file:
 setuptools.setup(
     name='yandex-chain',
     packages=setuptools.find_namespace_packages('.',exclude=['tests','examples']),
-    version='0.0.2',
+    version='0.0.3',
     install_requires=['requests','langchain','tenacity'],
     description='Yandex GPT Support for LangChain',
     author='Dmitri Soshnikov',
