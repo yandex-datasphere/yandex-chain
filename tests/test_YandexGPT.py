@@ -1,5 +1,4 @@
 import unittest
-import json
 from yandex_chain import YandexLLM, YException
 
 class TestYandexGPT(unittest.TestCase):
@@ -8,6 +7,9 @@ class TestYandexGPT(unittest.TestCase):
         YGPT = YandexLLM(config="tests/config.json")
         res = YGPT('Imagine no possessions...')
         self.assertGreater(len(res), 10)
+        self.assertGreater(YGPT.totalTokens,0)
+        self.assertGreater(YGPT.completionTokens,0)
+        self.assertGreater(YGPT.inputTextTokens,0)
 
     def wrong_auth(self):
         YGPT = YandexLLM(folder_id='xxxxxxx',iam_token='xxxxxxx')

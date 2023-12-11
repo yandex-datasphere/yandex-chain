@@ -12,11 +12,15 @@ class YandexLLM(langchain.llms.base.LLM):
     sleep_interval : float = 1.0
     retries = 3
     instruction_text : str = None
-    instruction_uri : str = None
+    instruction_id : str = None
     iam_token : str = None
     folder_id : str = None
     api_key : str = None
     config : str = None
+
+    inputTextTokens : int = 0
+    completionTokens : int = 0
+    totalTokens : int = 0
 
     @property
     def _llm_type(self) -> str:
@@ -27,33 +31,73 @@ class YandexLLM(langchain.llms.base.LLM):
         """Get the identifying parameters."""
         return { "max_tokens": self.max_tokens, "temperature" : self.temperature }
 
+    @property
+    def _modelUri(self):
+        if self.instruction_id:
+            return f"ds://{self.instruction_id}"
+        return f"gpt://{self.folder_id}/yandexgpt-lite/latest"
+
+    @staticmethod
+    def UserMessage(message):
+        return { "role" : "user", "text" : message }
+
+    @staticmethod
+    def AssistantMessage(message):
+        return { "role" : "assistant", "text" : message }
+
+    @staticmethod
+    def SystemMessage(message):
+        return { "role" : "system", "text" : message }
+
     def _call(
         self,
         prompt: str,
         stop: Optional[List[str]] = None,
         run_manager: Optional[CallbackManagerForLLMRun] = None,
+        return_message = False
     ) -> str:
         if stop is not None:
             raise ValueError("stop kwargs are not permitted.")
+        msgs = []
+        if self.instruction_text:
+            msgs.append(self.SystemMessage(self.instruction_text))
+        msgs.append(self.UserMessage(prompt))
+        return self._generate_messages(msgs)
+
+    def _generate_messages(self,
+        messages : List[Mapping],       
+        stop: Optional[List[str]] = None,
+        run_manager: Optional[CallbackManagerForLLMRun] = None,
+        return_message = False):
         auth = YAuth.from_params(dict(self))
+        if not self.folder_id:
+            self.folder_id = auth.folder_id
         req = {
-          "model": "general",
-          "instruction_text": self.instruction_text,
-          "instruction_uri" : self.instruction_uri,
-          "request_text": prompt,
-          "generation_options": {
+          "modelUri": self._modelUri,
+          "completionOptions": {
             "max_tokens": self.max_tokens,
             "temperature": self.temperature
-          }
+          },
+          "messages" : messages
         }
         try:
             for attempt in Retrying(stop=stop_after_attempt(self.retries),wait=wait_fixed(self.sleep_interval)):
                 with attempt:
-                    res = requests.post("https://llm.api.cloud.yandex.net/llm/v1alpha/instruct",
+                    res = requests.post("https://llm.api.cloud.yandex.net/foundationModels/v1/completion",
                             headers=auth.headers, json=req)
                     js = res.json()
                     if 'result' in js:
-                        return js['result']['alternatives'][0]['text']
-                    raise YException(f"Cannot process YaGPT request, result received: {js}")
+                        res = js['result']
+                        usage = res['usage']
+                        self.totalTokens += int(usage['totalTokens'])
+                        self.completionTokens += int(usage['completionTokens'])
+                        self.inputTextTokens += int(usage['inputTextTokens'])
+                        return res['alternatives'][0]['message'] if return_message else res['alternatives'][0]['message']['text']
+                    raise YException(f"Cannot process YandexGPT request, result received: {js}")
         except RetryError:
             raise YException(f"Error calling YandexGPT after {self.retries} retries. Result returned:\n{js}")
+
+    def resetUsage(self):
+        self.totalTokens = 0
+        self.completionTokens = 0
+        self.inputTextTokens = 0

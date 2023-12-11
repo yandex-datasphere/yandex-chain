@@ -15,16 +15,18 @@ class YandexEmbeddings(Embeddings):
         self.headers = self.auth.headers
         self.retries = retries
         
-    def _embed(self, text, embedding_type):
+    def _getModelUri(self,is_document=False):
+        return f"emb://{self.auth.folder_id}/text-search-{'doc' if is_document else 'query'}/latest"
+
+    def _embed(self, text, is_document=False):
         j = {
-          "model" : "general:embedding",
-          "embedding_type" : embedding_type,
+          "modelUri" : self._getModelUri(is_document),
           "text": text
         }
         try:
             for attempt in Retrying(stop=stop_after_attempt(self.retries),wait=wait_fixed(self.sleep_interval)):
                 with attempt:
-                    res = requests.post("https://llm.api.cloud.yandex.net/llm/v1alpha/embedding",
+                    res = requests.post("https://llm.api.cloud.yandex.net/foundationModels/v1/textEmbedding",
                                         json=j,headers=self.headers)
                     js = res.json()
                     if 'embedding' in js:
@@ -34,7 +36,7 @@ class YandexEmbeddings(Embeddings):
             raise YException(f"Error computing embeddings after {self.retries} retries. Result returned:\n{js}")
 
     def embed_document(self, text):
-        return self._embed(text,"EMBEDDING_TYPE_DOCUMENT")
+        return self._embed(text,is_document=True)
 
     def embed_documents(self, texts, chunk_size = 0):
         res = []
@@ -44,4 +46,4 @@ class YandexEmbeddings(Embeddings):
         return res
         
     def embed_query(self, text):
-        return self._embed(text,"EMBEDDING_TYPE_QUERY")
+        return self._embed(text,is_document=False)

@@ -6,4 +6,5 @@ __version__ = '0.0.3'
 
 from .YandexGPTEmbeddings import YandexEmbeddings
 from .YandexGPT import YandexLLM
+from .ChatYandexGPT import ChatYandexGPT
 from .util import YAuth, YException
