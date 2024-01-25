@@ -13,6 +13,15 @@ class TestChatYandexGPT(unittest.TestCase):
         self.assertGreater(YGPT.completionTokens,0)
         self.assertGreater(YGPT.inputTextTokens,0)
 
+    def test_full_model(self):
+        YGPT = ChatYandexGPT(config="tests/config.json",use_lite=False)
+        res = YGPT([HumanMessage(content='Imagine no possessions...')])
+        self.assertTrue(isinstance(res,AIMessage))
+        self.assertGreater(len(res.content), 10)
+        self.assertGreater(YGPT.totalTokens,0)
+        self.assertGreater(YGPT.completionTokens,0)
+        self.assertGreater(YGPT.inputTextTokens,0)
+
     def wrong_auth(self):
         YGPT = ChatYandexGPT(folder_id='xxxxxxx',iam_token='xxxxxxx')
         res = YGPT([HumanMessage(content='Imagine no possessions...')])

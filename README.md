@@ -91,6 +91,10 @@ This chain can now answer our questions:
 chain.invoke(query)
 ```
 
+## Lite vs. Full Models
+
+YandexGPT model comes in two flavours - YandexGPT Lite and full YandexGPT. By default, YandexGPT Lite is used. If you want to use full YandexGPT, you need to specify `use_lite=False` parameter when instantiating `YandexLLM` language model class.
+
 ## Testing
 
 This repository contains some basic unit tests. To run them, you need to place a configuration file `config.json` with your credentials into `tests` folder. Use `config_sample.json` as a reference. After that, please run the following at the repository root directory:

@@ -3,14 +3,16 @@ from typing import Any, List, Mapping, Optional
 from langchain.callbacks.manager import CallbackManagerForLLMRun
 import requests
 import langchain
+from langchain_core.language_models.llms import LLM
 from yandex_chain.util import YAuth, YException
 from tenacity import Retrying, RetryError, stop_after_attempt, wait_fixed
 
-class YandexLLM(langchain.llms.base.LLM):
+class YandexLLM(LLM):
     temperature : float = 1.0
     max_tokens : int = 1500
     sleep_interval : float = 1.0
     retries = 3
+    use_lite = True
     instruction_text : str = None
     instruction_id : str = None
     iam_token : str = None
@@ -35,7 +37,10 @@ class YandexLLM(langchain.llms.base.LLM):
     def _modelUri(self):
         if self.instruction_id:
             return f"ds://{self.instruction_id}"
-        return f"gpt://{self.folder_id}/yandexgpt-lite/latest"
+        if self.use_lite:
+            return f"gpt://{self.folder_id}/yandexgpt-lite/latest"
+        else:
+            return f"gpt://{self.folder_id}/yandexgpt/latest"
 
     @staticmethod
     def UserMessage(message):
