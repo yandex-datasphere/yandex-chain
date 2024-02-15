@@ -23,6 +23,7 @@ class YandexLLM(LLM):
     inputTextTokens : int = 0
     completionTokens : int = 0
     totalTokens : int = 0
+    disable_logging : bool = False
 
     @property
     def _llm_type(self) -> str:
@@ -85,11 +86,14 @@ class YandexLLM(LLM):
           },
           "messages" : messages
         }
+        headers = auth.headers
+        if self.disable_logging:
+            headers['x-data-logging-enabled'] = 'false'
         try:
             for attempt in Retrying(stop=stop_after_attempt(self.retries),wait=wait_fixed(self.sleep_interval)):
                 with attempt:
                     res = requests.post("https://llm.api.cloud.yandex.net/foundationModels/v1/completion",
-                            headers=auth.headers, json=req)
+                            headers=headers, json=req)
                     js = res.json()
                     if 'result' in js:
                         res = js['result']
