@@ -6,9 +6,10 @@ This library is community-maintained Python package that provides support for [Y
 
 ## What's Included
 
-The library includes the following two main classes:
+The library includes the following three main classes:
 
 * **YandexLLM** is a class representing [YandexGPT Text Generation](https://cloud.yandex.ru/docs/yandexgpt/api-ref/TextGeneration/).
+* **ChatYandexGPT** exposes the same model in chat interface that expects messages as input.
 * **YandexEmbeddings** represents [YandexGPT Embeddings](https://cloud.yandex.ru/docs/yandexgpt/api-ref/Embeddings/) service.
 
 ## Usage
@@ -31,9 +32,21 @@ embeddings = YandexEmbeddings(...)
 print(embeddings("How are you today?"))
 ```
 
+Use `ChatYandexGPT` to execute a dialog with the model:
+```python
+from yandex_chain import YandexLLM
+
+gpt = ChatYandexGPT(...)
+print(gpt(
+    [
+        HumanMessage(content='Привет! Придумай 10 новых слов для приветствия.')
+    ]))
+
+``` 
+
 ## Authentication
 
-In order to use Yandex GPT, you need to provide one of the following authentication methods, which you can specify as parameters to `YandexLLM` and `YandexEmbeddings` classes:
+In order to use Yandex GPT, you need to provide one of the following authentication methods, which you can specify as parameters to `YandexLLM`, `ChatYandexGPT` and `YandexEmbeddings` classes:
 
 * A pair of `folder_id` and `api_key`
 * A pair of `folder_id` and `iam_token`
@@ -93,7 +106,13 @@ chain.invoke(query)
 
 ## Lite vs. Full Models
 
-YandexGPT model comes in two flavours - YandexGPT Lite and full YandexGPT. By default, YandexGPT Lite is used. If you want to use full YandexGPT, you need to specify `use_lite=False` parameter when instantiating `YandexLLM` language model class.
+YandexGPT model comes in several flavours - YandexGPT Lite (current and RC), YandexGPT Pro and Summarization model. By default, YandexGPT Lite is used. If you want to use different model, please specify it in the constructor of `YandexLLM` or `ChatYandexGPT` language model classes:
+* **Pro** (based on Yandex GPT 3): `model=YandexGPTModel.Pro`
+* **Lite** (based on Yandex GPT 2): `model=YandexGPTModel.Lite`
+* **Lite RC** (based on Yandex GPT 3): `model=YandexGPTModel.LiteRC`
+* **Summarization** (based on Yandex GPT 2): `model=YandexGPTModel.Summarization`
+
+> In previous versions, we were using `use_lite` flag to switch between Lite and Pro models. This behavior is still supported, but is deprecated, and will be removed in the next version.
 
 ## Testing
 
