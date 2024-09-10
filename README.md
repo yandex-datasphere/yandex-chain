@@ -6,11 +6,12 @@ This library is community-maintained Python package that provides support for [Y
 
 ## What's Included
 
-The library includes the following three main classes:
+The library includes the following main classes:
 
 * **YandexLLM** is a class representing [YandexGPT Text Generation](https://cloud.yandex.ru/docs/yandexgpt/api-ref/TextGeneration/).
 * **ChatYandexGPT** exposes the same model in chat interface that expects messages as input.
 * **YandexEmbeddings** represents [YandexGPT Embeddings](https://cloud.yandex.ru/docs/yandexgpt/api-ref/Embeddings/) service.
+* **YandexGPTClassifier** that supports [zero-shot and few-shot classification](https://yandex.cloud/en/docs/foundation-models/concepts/classifier).
 
 ## Usage
 
