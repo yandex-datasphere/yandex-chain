@@ -109,11 +109,18 @@ chain.invoke(query)
 
 YandexGPT model comes in several flavours - YandexGPT Lite (current and RC), YandexGPT Pro and Summarization model. By default, YandexGPT Lite is used. If you want to use different model, please specify it in the constructor of `YandexLLM` or `ChatYandexGPT` language model classes:
 * **Pro** (based on Yandex GPT 3): `model=YandexGPTModel.Pro`
-* **Lite** (based on Yandex GPT 2): `model=YandexGPTModel.Lite`
-* **Lite RC** (based on Yandex GPT 3): `model=YandexGPTModel.LiteRC`
+* **Lite** (based on Yandex GPT 3): `model=YandexGPTModel.Lite`
+* **Pro RC** (based on Yandex GPT 4): `model=YandexGPTModel.ProRC`
+* **Lite RC** (based on Yandex GPT 4): `model=YandexGPTModel.LiteRC`
+* **Pro 32k** (based on Yandex GPT 4): `model=YandexGPTModel.Pro32k`
 * **Summarization** (based on Yandex GPT 2): `model=YandexGPTModel.Summarization`
 
 > In previous versions, we were using `use_lite` flag to switch between Lite and Pro models. This behavior is still supported, but is deprecated, and will be removed in the next version.
+
+## Async Operations
+
+The library supports explicit async mode of Yandex GPT API. Provided `model` is `YandexLLM` model,
+you can call `model.invokeAsync(...)` to obtain the `id` of the async operation. You can then call `model.checkAsyncResult(id)` to check if the result if ready. `checkAsyncResult` returns `None` when the result is not ready, otherwise it returns the result of the operation (string, or Message if `return_message` argument is `True`).
 
 ## Testing
 

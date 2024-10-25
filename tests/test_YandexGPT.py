@@ -27,6 +27,19 @@ class TestYandexGPT(unittest.TestCase):
         self.assertGreater(YGPT.completionTokens,0)
         self.assertGreater(YGPT.inputTextTokens,0)
 
+    def test_prorc_model(self):
+        YGPT = YandexLLM(config="tests/config.json",model=YandexGPTModel.ProRC)
+        res  = YGPT.invoke('Imagine no possessions...')
+        self.assertGreater(len(res), 10)
+        self.assertGreater(YGPT.totalTokens,0)
+        self.assertGreater(YGPT.completionTokens,0)
+        self.assertGreater(YGPT.inputTextTokens,0)
+
+    def test_async(self):
+        YGPT = YandexLLM(config="tests/config.json")
+        id = YGPT.invokeAsync('Imagine no possessions...')
+        self.assertGreater(len(id), 3)
+
     def test_summarization_model(self):
         txt = 'Я как-то пошел гулять со своей девушкой, и увидел, что на дереве сидела птица воробей. Как дела? - спросил я у птицы воробья. Но птица ничего мне не отвечала, только сидела на дереве, потряхивая трухлявыми крыльями, и молчала.'
         YGPT = YandexLLM(config="tests/config.json",model=YandexGPTModel.Summarization)
