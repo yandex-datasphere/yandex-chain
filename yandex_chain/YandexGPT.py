@@ -21,7 +21,7 @@ class YandexLLM(LLM):
     temperature : float = 1.0
     max_tokens : int = 1500
     sleep_interval : float = 1.0
-    retries = 3
+    retries : int = 3
     use_lite : bool = None
     model : YandexGPTModel = None
     instruction_text : str = None
